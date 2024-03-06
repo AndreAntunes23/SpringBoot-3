@@ -89,6 +89,17 @@ Existem diversos algoritmos de hashing que podem ser utilizados para fazer essa 
 
 - JSON Web Token, ou JWT, é um padrão utilizado para a geração de tokens, que nada mais são do que Strings, representando, de maneira segura, informações que serão compartilhadas entre dois sistemas.
 
+
+- controle de acesso por url:  
+Na aplicação utilizada no curso não teremos perfis de acessos distintos para os usuários. Entretanto, esse recurso é utilizado em algumas aplicações e podemos indicar ao Spring Security que determinadas URLs somente podem ser acessadas por usuários que possuem um perfil específico.
+Por exemplo, suponha que em nossa aplicação tenhamos um perfil de acesso chamado de ADMIN, sendo que somente usuários com esse perfil possam excluir médicos e pacientes. Podemos indicar ao Spring Security tal configuração alterando o método securityFilterChain, na classe SecurityConfigurations
+
+
+- controle de acesso por anotações:  
+Outra maneira de restringir o acesso a determinadas funcionalidades, com base no perfil dos usuários, é com a utilização de um recurso do Spring Security conhecido como Method Security, que funciona com a utilização de anotações em métodos.
+o método foi anotado com @Secured("ROLE_ADMIN"), para que apenas usuários com o perfil ADMIN possam disparar requisições para detalhar um médico. A anotação @Secured pode ser adicionada em métodos individuais ou mesmo na classe, que seria o equivalente a adicioná-la em todos os métodos.
+Atenção! Por padrão esse recurso vem desabilitado no spring Security, sendo que para o utilizar devemos adicionar a seguinte anotação na classe Securityconfigurations do projeto
+
 ## Aprendizados
 1.	Criar um projeto Spring Boot utilizando o site do Spring Initializr;
 2.	Importar o projeto no IntelliJ e executar uma aplicação Spring Boot pela classe contendo o método main;
@@ -134,6 +145,11 @@ Existem diversos algoritmos de hashing que podem ser utilizados para fazer essa 
 42.	Enviar dados para API no formato JSON;
 43.	Utilizar a anotação @RequestBody para receber os dados do corpo da requisição em um parâmetro no Controller;
 44.	Utilizar o padrão DTO (Data Transfer Object), via Java Records, para representar os dados recebidos em uma requisição POST.
+45. Funcionam os Filters em uma requisição;
+46. Implementar um filter criando uma classe que herda da classe OncePerRequestFilter, do Spring;
+47. Utilizar a biblioteca Auth0 java-jwt para realizar a validação dos tokens recebidos na API;
+48. Realizar o processo de autenticação da requisição, utilizando a classe SecurityContextHolder, do Spring;
+49. Liberar e restringir requisições, de acordo com a URL e o verbo do protocolo HTTP.
 
 ## Links de interesse
 https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-3.0-Release-Notes
@@ -153,3 +169,5 @@ https://docs.spring.io/spring-data/jpa/reference/jpa/query-methods.html
 https://jwt.io/introduction
 
 https://www.alura.com.br/artigos/o-que-e-json-web-tokens?_gl=1*3ch8q7*_ga*NDI2NTU4ODUwLjE3MDg4Njk4OTg.*_ga_1EPWSW3PCS*MTcwOTczMTM3OC4yOS4xLjE3MDk3MzMwMjUuMC4wLjA.*_fplc*QmhKVUdVZXhHTHltZnRUN1ZQcHBtUlVTdFppeTRzaU9PRDZHUk9hSFZJSWFMeVEwbyUyRmxxUW9QS0J2czFXTkJLVXZDUGxCVUpaM1ZGJTJCajhHSEVuZHNkYlhZaU9qTVpIMnhCQmxVRlZZdHhRMEZBZk1FJTJCQlNGUnpaRkFUQTVBJTNEJTNE
+
+https://docs.spring.io/spring-security/reference/servlet/authorization/method-security.html
