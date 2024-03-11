@@ -98,7 +98,48 @@ Por exemplo, suponha que em nossa aplicação tenhamos um perfil de acesso chama
 - controle de acesso por anotações:  
 Outra maneira de restringir o acesso a determinadas funcionalidades, com base no perfil dos usuários, é com a utilização de um recurso do Spring Security conhecido como Method Security, que funciona com a utilização de anotações em métodos.
 o método foi anotado com @Secured("ROLE_ADMIN"), para que apenas usuários com o perfil ADMIN possam disparar requisições para detalhar um médico. A anotação @Secured pode ser adicionada em métodos individuais ou mesmo na classe, que seria o equivalente a adicioná-la em todos os métodos.
-Atenção! Por padrão esse recurso vem desabilitado no spring Security, sendo que para o utilizar devemos adicionar a seguinte anotação na classe Securityconfigurations do projeto
+Atenção! Por padrão esse recurso vem desabilitado no spring Security, sendo que para o utilizar devemos adicionar a seguinte anotação na classe Securityconfigurations do projeto.
+
+3. Documente, teste e prepare uma API para o deploy
+
+- formatação de datas:  
+Como foi demonstrado no vídeo anterior, o Spring tem um padrão de formatação para campos do tipo data quando esses são mapeados em atributos do tipo LocalDateTime. Entretanto, é possível personalizar tal padrão para utilizar outras formatações de nossa preferência.
+Por exemplo, imagine que precisamos receber a data/hora da consulta no seguinte formato: dd/mm/yyyy hh:mm. Para que isso seja possível, precisamos indicar ao Spring que esse será o formato ao qual a data/hora será recebida na API, sendo que isso pode ser feito diretamente no DTO, com a utilização da anotação @JsonFormat.  
+No atributo pattern indicamos o padrão de formatação esperado, seguindo as regras definidas pelo padrão de datas do Java. Você pode encontrar mais detalhes nesta página do JavaDoc.
+Essa anotação também pode ser utilizada nas classes DTO que representam as informações que a API devolve, para que assim o JSON devolvido seja formatado de acordo com o pattern configurado. Além disso, ela não se restringe apenas à classe LocalDateTime, podendo também ser utilizada em atributos do tipo LocalDate e LocalTime.
+
+
+- Service Pattern:  
+O Padrão Service é muito utilizado na programação e seu nome é muito comentado. Mas apesar de ser um nome único, Service pode ser interpretado de várias maneiras: pode ser um Use Case (Application Service); um Domain Service, que possui regras do seu domínio; um Infrastructure Service, que usa algum pacote externo para realizar tarefas; etc.
+Apesar da interpretação ocorrer de várias formas, a ideia por trás do padrão é separar as regras de negócio, as regras da aplicação e as regras de apresentação para que elas possam ser facilmente testadas e reutilizadas em outras partes do sistema.
+Existem duas formas mais utilizadas para criar Services. Você pode criar Services mais genéricos, responsáveis por todas as atribuições de um Controller; ou ser ainda mais específico, aplicando assim o S do SOLID: Single Responsibility Principle (Princípio da Responsabilidade Única). Esse princípio nos diz que uma classe/função/arquivo deve ter apenas uma única responsabilidade.
+Pense em um sistema de vendas, no qual provavelmente teríamos algumas funções como: Cadastrar usuário, Efetuar login, Buscar produtos, Buscar produto por nome, etc. Logo, poderíamos criar os seguintes Services: CadastroDeUsuarioService, EfetuaLoginService, BuscaDeProdutosService, etc.
+Mas é importante ficarmos atentos, pois muitas vezes não é necessário criar um Service e, consequentemente, adicionar mais uma camada e complexidade desnecessária à nossa aplicação. Uma regra que podemos utilizar é a seguinte: se não houverem regras de negócio, podemos simplesmente realizar a comunicação direta entre os controllers e os repositories da aplicação.
+
+
+- princípios SOLID:  
+SOLID é uma sigla que representa cinco princípios de programação:
+Single Responsibility Principle (Princípio da Responsabilidade Única);  
+Open-Closed Principle (Princípio Aberto-Fechado);  
+Liskov Substitution Principle (Princípio da Substituição de Liskov);  
+Interface Segregation Principle (Princípio da Segregação de Interface);  
+Dependency Inversion Principle (Princípio da Inversão de Dependência);  
+Cada princípio representa uma boa prática de programação, que quando aplicadas facilita muito a sua manutenção e extensão. Tais princípios foram criados por Robert Martin, conhecido como Uncle Bob, em seu artigo Design Principles and Design Patterns.
+
+
+- OpenAPI Initiative:  
+A documentação é algo muito importante em um projeto, principalmente se ele for uma API Rest, pois nesse caso podemos ter vários clientes que vão precisar se comunicar com ela, necessitando então de uma documentação que os ensinem como realizar essa comunicação de maneira correta.
+Por muito tempo não existia um formato padrão de se documentar uma API Rest, até que em 2010 surgiu um projeto conhecido como Swagger, cujo objetivo era ser uma especificação open source para design de APIs Rest. Depois de um tempo, foram desenvolvidas algumas ferramentas para auxiliar pessoas desenvolvedoras a implementar, visualizar e testar suas APIs, como o Swagger UI, Swagger Editor e Swagger Codegen, tornando-se assim muito popular e utilizado ao redor do mundo.
+Em 2015, o Swagger foi comprado pela empresa SmartBear Software, que doou a parte da especificação para a fundação Linux. Por sua vez, a fundação renomeou o projeto para OpenAPI. Após isso, foi criada a OpenAPI Initiative, uma organização focada no desenvolvimento e evolução da especificação OpenAPI de maneira aberta e transparente.
+A OpenAPI é hoje a especificação mais utilizada, e também a principal, para documentar uma API Rest. A documentação segue um padrão que pode ser descrito no formato yaml ou JSON, facilitando a criação de ferramentas que consigam ler tais arquivos e automatizar a criação de documentações, bem como a geração de códigos para consumo de uma API.
+Você pode obter mais detalhes no site oficial da OpenAPI Initiative.
+
+
+- testes com in-memory database:  
+Podemos realizar os testes de interfaces repository utilizando um banco de dados em memória, como o H2, ao invés de utilizar o mesmo banco de dados da aplicação.
+Caso você queira utilizar essa estratégia de executar os testes com um banco de dados em memória, será necessário incluir o H2 no projeto, adicionando a seguinte dependência no arquivo pom.xml.  
+É necessário remover as anotações @AutoConfigureTestDatabase e @ActiveProfiles na classe de teste, deixando-a apenas com a anotação @DataJpaTest.
+Também pode apagar o arquivo application-test.properties, pois o Spring Boot realiza as configurações de url, username e password do banco de dados H2 de maneira automática.
 
 ## Aprendizados
 1.	Criar um projeto Spring Boot utilizando o site do Spring Initializr;
@@ -150,6 +191,31 @@ Atenção! Por padrão esse recurso vem desabilitado no spring Security, sendo q
 47. Utilizar a biblioteca Auth0 java-jwt para realizar a validação dos tokens recebidos na API;
 48. Realizar o processo de autenticação da requisição, utilizando a classe SecurityContextHolder, do Spring;
 49. Liberar e restringir requisições, de acordo com a URL e o verbo do protocolo HTTP.
+50. Implementar uma nova funcionalidade no projeto; 
+51. Avaliar quando é necessário criar uma classe Service na aplicação; 
+52. Criar uma classe Service, com o objetivo de isolar códigos de regras de negócio, utilizando para isso a anotação @Service; 
+53. Implementar um algoritmo para a funcionalidade de agendamento de consultas; 
+54. Realizar validações de integridade das informações que chegam na API; 
+55. Implementar uma consulta JPQL (Java Persistence Query Language) complexa em uma interface repository, utilizando para isso a anotação @Query.
+56. Isolar os códigos de validações de regras de negócio em classes separadas, utilizando nelas a anotação @Component do Spring; 
+57. Finalizar a implementação do algoritmo de agendamento de consultas; 
+58. Utilizar os princípios SOLID para deixar o código da funcionalidade de agendamento de consultas mais fácil de entender, evoluir e testar.
+59. Adicionar a biblioteca SpringDoc no projeto para que ela faça a geração automatizada da documentação da API; 
+60. Analisar a documentação do SpringDoc para entender como realizar a sua configuração em um projeto; 
+61. Acessar os endereços que disponibilizam a documentação da API nos formatos yaml e html; 
+62. Utilizar o Swagger UI para visualizar e testar uma API Rest; 
+63. Configurar o JWT na documentação gerada pelo SpringDoc.
+64. Escrever testes automatizados em uma aplicação com Spring Boot; 
+65. Escrever testes automatizados de uma interface Repository, seguindo a estratégia de usar o mesmo banco de dados que a aplicação utiliza; 
+66. Sobrescrever propriedades do arquivo application.properties, criando outro arquivo chamado application-test.properties que seja carregado apenas ao executar os testes, utilizando para isso a anotação @ActiveProfiles; 
+67. Escrever testes automatizados de uma classe Controller, utilizando a classe MockMvc para simular requisições na API; 
+68. Testar cenários de erro 400 e código 200 no teste de uma classe controller.
+69. Funciona o build de uma aplicação com Spring Boot; 
+70. Utilizar arquivos de propriedades específicos para cada profile, alterando em cada arquivo as propriedades que precisam ser modificadas; 
+71. Configurar informações sensíveis da aplicação, como dados de acesso ao banco de dados, via variáveis de ambiente; 
+72. Realizar o build do projeto via Maven; 
+73. Executar a aplicação via terminal, com o comando java -jar, passando as variáveis de ambiente como parâmetro.
+    
 
 ## Links de interesse
 https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-3.0-Release-Notes
@@ -171,3 +237,10 @@ https://jwt.io/introduction
 https://www.alura.com.br/artigos/o-que-e-json-web-tokens?_gl=1*3ch8q7*_ga*NDI2NTU4ODUwLjE3MDg4Njk4OTg.*_ga_1EPWSW3PCS*MTcwOTczMTM3OC4yOS4xLjE3MDk3MzMwMjUuMC4wLjA.*_fplc*QmhKVUdVZXhHTHltZnRUN1ZQcHBtUlVTdFppeTRzaU9PRDZHUk9hSFZJSWFMeVEwbyUyRmxxUW9QS0J2czFXTkJLVXZDUGxCVUpaM1ZGJTJCajhHSEVuZHNkYlhZaU9qTVpIMnhCQmxVRlZZdHhRMEZBZk1FJTJCQlNGUnpaRkFUQTVBJTNEJTNE
 
 https://docs.spring.io/spring-security/reference/servlet/authorization/method-security.html
+
+http://staff.cs.utu.fi/~jounsmed/doos_06/material/DesignPrinciplesAndPatterns.pdf
+
+https://www.openapis.org/
+
+https://spec.openapis.org/oas/latest.html#schema
+
